@@ -19,7 +19,7 @@ export class Users {
   @Column("character varying", { name: "user_email", length: 50 })
   userEmail: string;
 
-  @Column("character varying", { name: "user_name", length: 100 })
+  @Column("character varying", { name: "user_name", length: 20 })
   userName: string;
 
   @Column("character varying", { name: "user_password", length: 200 })
@@ -33,7 +33,6 @@ export class Users {
 
   @OneToMany(() => Purchases, (purchases) => purchases.user)
   purchases: Purchases[];
-
 
   hashPassword(): void {
     const salt = genSaltSync(10);

@@ -44,5 +44,95 @@ export class CowController {
             "Response": response
         })
     }
+
+    static updateCow = async (req: Request, res: Response) => {
+        const userId: number = res.locals.jwtPayload.id;
+        const { id } = req.params;
+        const { name, race, birthDate, buyDate, price, description, image } = req.body;
+        const cowBD = getRepository(Cows);
+        let cowFound: Cows = null;
+
+        try {
+            cowFound = await cowBD.findOneOrFail(id, { relations: ["user"] });
+            cowFound.cowName = name;
+            cowFound.cowDescription = description;
+            cowFound.cowRace = race;
+            cowFound.cowBirthDate = birthDate;
+            cowFound.cowBuyDate = buyDate;
+            cowFound.cowPrice = price;
+            cowFound.cowImage = image;
+        } catch (error) {
+            return res.status(404).json(
+                { message: 'Cow not found!' }
+            );
+        }
+       
+     
+        if ( cowFound.user.userId !== userId) {
+            return res.status(404).json(
+                { message: 'You do not have permission for this cow' }
+            );
+        }
+
+
+        let response: any = null;
+        try {
+            response = await cowBD.save(cowFound);
+            delete response['user']
+        } catch (error) {
+            return res.status(404).json(
+                { message: 'Something goes wrong!', error }
+            );
+        }
+
+        
+        res.json({
+            "Message": "Cow updated successfully",
+            "Response": response
+        })
+
+    }
+
+    static updateActiveCow = async (req: Request, res: Response) => {
+        const userId: number = res.locals.jwtPayload.id;
+        const { id } = req.params;
+        const { active } = req.body;
+        const cowBD = getRepository(Cows);
+        let cowFound: Cows = null;
+
+        try {
+            cowFound = await cowBD.findOneOrFail(id, { relations: ["user"]});
+            cowFound.cowActive = active;
+        } catch (error) {
+            return res.status(404).json(
+                { message: 'Cow not found!', error }
+            );
+        }
+
+        if ( cowFound.user.userId !== userId) {
+            return res.status(404).json(
+                { message: 'You do not have permission for this cow' }
+            );
+        }
+
+
+        let response: any = null;
+        try {
+            response = await cowBD.save(cowFound);
+            delete response['user']
+        } catch (error) {
+            return res.status(404).json(
+                { message: 'Cow not found!', error }
+            );
+        }
+
+        res.json({
+            "Message": "Cow updated successfully",
+            "Response": response
+        })
+    }
+
+
+
 }
 

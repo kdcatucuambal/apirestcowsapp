@@ -37,6 +37,9 @@ export class Cows {
   @Column("text", { name: "cow_image", nullable: true })
   cowImage: string | null;
 
+  @Column("boolean", { name: "cow_active", default: () => "true" })
+  cowActive: boolean;
+
   @ManyToOne(() => Users, (users) => users.cows, {
     onDelete: "RESTRICT",
     onUpdate: "RESTRICT",
