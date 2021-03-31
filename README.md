@@ -1,4 +1,4 @@
-# Awesome Project Build with TypeORM
+# Project Cows Api Build with TypeORM
 
 Steps to run this project:
 
