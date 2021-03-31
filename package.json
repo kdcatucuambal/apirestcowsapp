@@ -1,7 +1,11 @@
 {
    "name": "practice",
    "version": "0.0.1",
-   "description": "Awesome project developed with TypeORM.",
+   "description": "Awesome project developed with TypeORM SYSTEMCOW",
+   "author": {
+      "name": "Kevin Catucuamba",
+      "email": "kdcatucuambal@utn.edu.ec"
+   },
    "devDependencies": {
       "ts-node-dev": "^1.1.1"
    },
