@@ -13,7 +13,6 @@ export class AuthController {
                 { message: 'Username & Password are required!' }
             );
         }
-
         const userRepository = getRepository(Users);
         let user: Users;
         try {
@@ -24,19 +23,16 @@ export class AuthController {
                 { message: 'Username or Password are incorrect!' }
             );
         }
-
         if (!user.checkPassword(password)) {
             return res.status(400).json(
                 { message: 'Username & Password are incorrect!' }
             );
         }
-
         const token = jwt.sign({
             id: user.userId,
             email: user.userEmail,
             name: user.userName
         }, config.jwtSecret, { expiresIn: '1h' });
-
         res.json({
             message: 'OK',
             token,
@@ -44,7 +40,5 @@ export class AuthController {
             name: user.userName,
             email: user.userEmail
         })
-
-
     }
 }
