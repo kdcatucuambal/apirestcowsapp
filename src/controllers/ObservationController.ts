@@ -60,14 +60,144 @@ export class ObservationController {
 
 
     static newObservation = async (req: Request, res: Response) => {
+        const userIdToken = res.locals.jwtPayload.id;
+        const { type, cow, description, price } = req.body;
+
+        const observationBD = getRepository(Observations);
+        const typeObsBD = getRepository(TypesObservations);
+        const cowBD = getRepository(Cows);
+
+        let typeFound: TypesObservations = null;
+        let cowFound: Cows = null;
+
+        try {
+            typeFound = await typeObsBD.findOneOrFail(type);
+        } catch (error) {
+            return res.status(404).json({ message: "There are no data", response: error });
+        }
+
+        try {
+            cowFound = await cowBD.findOneOrFail(cow, { relations: ['user'] });
+        } catch (error) {
+            return res.status(404).json({ message: "There are no data", response: error });
+        }
+
+
+        if (userIdToken !== cowFound.user.userId) {
+            return res.status(400).json({
+                message: "There are no data",
+                response: "You do not have permission for this element"
+            });
+        }
+
+        const observation: Observations = new Observations();
+
+        observation.cow = cowFound;
+        observation.type = typeFound;
+        observation.observationDate = new Date().toDateString();
+        observation.observationDescription = description;
+        observation.observationPrice = price;
+
+        let response = null;
+        try {
+            response = await observationBD.save(observation);
+            delete response.cow['user']
+            response.cow = cow;
+            response.type = type;
+        } catch (error) {
+            return res.status(406).json({ message: "Something goes wrong", response: error });
+        }
+
+        res.json({
+            "message": "Observation created successfully!",
+            "response": response
+        })
 
     }
 
     static updateObservation = async (req: Request, res: Response) => {
+        const userIdToken = res.locals.jwtPayload.id;
+        const { type, description, price, updateDate } = req.body;
+        //Observation ID
+        const { id } = req.params;
+
+        const observationBD = getRepository(Observations);
+        const typeObsBD = getRepository(TypesObservations);
+
+        let obsFound: Observations = null;
+        let typeFound: TypesObservations = null;
+
+        try {
+            obsFound = await observationBD.findOneOrFail(id, { relations: ['cow', 'cow.user'] });
+        } catch (error) {
+            return res.status(404).json({ message: "There are no data", response: error });
+        }
+
+        if (obsFound.cow.user.userId !== userIdToken) {
+            return res.status(400).json({
+                message: "There are no data",
+                response: "You do not have permission for this element"
+            });
+        }
+
+        try {
+            typeFound = await typeObsBD.findOneOrFail(type);
+        } catch (error) {
+            return res.status(404).json({ message: "There are no data", response: error });
+        }
+        obsFound.observationDescription = description;
+        obsFound.observationPrice = price;
+        obsFound.type = typeFound;
+
+        if (updateDate) {
+            obsFound.observationDate = new Date().toDateString();
+        }
+
+        let response = null;
+
+        try {
+            response = await observationBD.save(obsFound);
+            delete response.cow['user']
+            response.cow = obsFound.cow.cowId;
+        } catch (error) {
+            return res.status(406).json({ message: "Something goes wrong", response: error });
+        }
+
+        res.json({
+            "message": "Observation updated successfully!",
+            "response": response
+        })
 
     }
 
-    static deleteObservation = async (re: Request, res: Response) => {
+    static deleteObservation = async (req: Request, res: Response) => {
+        const userIdToken = res.locals.jwtPayload.id;
+
+        const { id } = req.params;
+        const observationBD = getRepository(Observations);
+
+        let obsFound: Observations = null;
+
+        try {
+            obsFound = await observationBD.findOneOrFail(id, { relations: ['cow', 'cow.user'] });
+        } catch (error) {
+            return res.status(404).json({ message: "There are no data", response: error });
+        }
+
+        if (obsFound.cow.user.userId !== userIdToken) {
+            return res.status(400).json({
+                message: "There are no data",
+                response: "You do not have permission for this element"
+            });
+        }
+
+    
+        const response = await observationBD.delete(id);
+       
+        res.json({
+            "message": "Observation deleted successfully!",
+            "affected": response.affected
+        })
 
     }
 

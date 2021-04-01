@@ -8,6 +8,7 @@ import {
 } from "typeorm";
 import { Cows } from "./Cows";
 import { Payments } from "./Payments";
+import { Products } from "./Products";
 import { Purchases } from "./Purchases";
 
 @Index("pk_users", ["userId"], { unique: true })
@@ -19,7 +20,7 @@ export class Users {
   @Column("character varying", { name: "user_email", length: 50 })
   userEmail: string;
 
-  @Column("character varying", { name: "user_name", length: 20 })
+  @Column("character varying", { name: "user_name", length: 100 })
   userName: string;
 
   @Column("character varying", { name: "user_password", length: 200 })
@@ -31,14 +32,17 @@ export class Users {
   @OneToMany(() => Payments, (payments) => payments.user)
   payments: Payments[];
 
+  @OneToMany(() => Products, (products) => products.user)
+  products: Products[];
+
   @OneToMany(() => Purchases, (purchases) => purchases.user)
   purchases: Purchases[];
-
+  
   hashPassword(): void {
     const salt = genSaltSync(10);
     this.userPassword = hashSync(this.userPassword, salt);
   }
-
+  
   checkPassword(password: string): boolean {
     return compareSync(password, this.userPassword);
   }
@@ -46,6 +50,4 @@ export class Users {
   checkPasswordSimple(password: string): boolean {
     return password == this.userPassword;
   }
-
-
 }

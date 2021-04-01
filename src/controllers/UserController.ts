@@ -25,7 +25,6 @@ export class UserController {
         const userDB = getRepository(Users);
         const { email, name, password } = req.body;
 
-
         const user = new Users();
         user.userName = name;
         user.userPassword = password;

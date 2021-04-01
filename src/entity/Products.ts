@@ -2,10 +2,13 @@ import {
   Column,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Items } from "./Items";
+import { Users } from "./Users";
 
 @Index("pk_products", ["productId"], { unique: true })
 @Entity("products", { schema: "public" })
@@ -21,4 +24,11 @@ export class Products {
 
   @OneToMany(() => Items, (items) => items.product)
   items: Items[];
+
+  @ManyToOne(() => Users, (users) => users.products, {
+    onDelete: "RESTRICT",
+    onUpdate: "RESTRICT",
+  })
+  @JoinColumn([{ name: "user_id", referencedColumnName: "userId" }])
+  user: Users;
 }
