@@ -38,7 +38,7 @@ export class CowController {
                 error
             });
         }
-
+        
         res.json({
             "Message": "Cow created",
             "Response": response

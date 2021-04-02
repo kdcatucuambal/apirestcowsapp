@@ -16,41 +16,23 @@ export class Payments {
   @PrimaryGeneratedColumn({ type: "integer", name: "payment_id" })
   paymentId: number;
 
-  @Column("date", { name: "payment_date", nullable: true })
-  paymentDate: string | null;
+  @Column("date", { name: "payment_date" })
+  paymentDate: string;
 
-  @Column("date", { name: "payment_to_date", nullable: true })
-  paymentToDate: string | null;
+  @Column("date", { name: "payment_to_date" })
+  paymentToDate: string;
 
-  @Column("date", { name: "payment_from_date", nullable: true })
-  paymentFromDate: string | null;
+  @Column("date", { name: "payment_from_date" })
+  paymentFromDate: string;
 
-  @Column("numeric", {
-    name: "payment_total_liters",
-    nullable: true,
-    precision: 7,
-    scale: 2,
-  })
-  paymentTotalLiters: string | null;
+  @Column("numeric", { name: "payment_total_liters", precision: 7, scale: 2 })
+  paymentTotalLiters: string;
 
-  @Column("numeric", {
-    name: "payment_liter_value",
-    nullable: true,
-    precision: 4,
-    scale: 2,
-  })
-  paymentLiterValue: string | null;
+  @Column("numeric", { name: "payment_liter_value", precision: 4, scale: 2 })
+  paymentLiterValue: string;
 
-  @Column("numeric", {
-    name: "payment_total",
-    nullable: true,
-    precision: 7,
-    scale: 2,
-  })
-  paymentTotal: string | null;
-
-  @Column("boolean", { name: "purchase_active" })
-  purchaseActive: boolean;
+  @Column("numeric", { name: "payment_total", precision: 7, scale: 2 })
+  paymentTotal: string;
 
   @ManyToOne(() => Users, (users) => users.payments, {
     onDelete: "RESTRICT",

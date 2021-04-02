@@ -13,7 +13,7 @@ export class TypesObservations {
   @PrimaryGeneratedColumn({ type: "integer", name: "type_id" })
   typeId: number;
 
-  @Column("character varying", { name: "type_name", length: 20 })
+  @Column("character varying", { name: "type_name", length: 200 })
   typeName: string;
 
   @OneToMany(() => Observations, (observations) => observations.type)

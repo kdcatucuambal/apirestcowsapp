@@ -10,6 +10,7 @@ import { Cows } from "./Cows";
 import { Payments } from "./Payments";
 import { Products } from "./Products";
 import { Purchases } from "./Purchases";
+import { TempRecord } from "./TempRecord";
 
 @Index("pk_users", ["userId"], { unique: true })
 @Entity("users", { schema: "public" })
@@ -37,7 +38,10 @@ export class Users {
 
   @OneToMany(() => Purchases, (purchases) => purchases.user)
   purchases: Purchases[];
-  
+
+  @OneToMany(() => TempRecord, (tempRecord) => tempRecord.user)
+  tempRecords: TempRecord[];
+
   hashPassword(): void {
     const salt = genSaltSync(10);
     this.userPassword = hashSync(this.userPassword, salt);

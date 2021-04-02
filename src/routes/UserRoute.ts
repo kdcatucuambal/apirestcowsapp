@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { UserController } from "./../controllers/UserController"
 import { CowController } from "./../controllers/CowController"
 import { ObservationController } from "./../controllers/ObservationController";
+import { ProductController } from "./../controllers/ProductController";
 import { checkJwt } from "./../middlewares/jwt";
 const router = Router();
 
@@ -12,6 +13,13 @@ router.get('/observations/bycow/:id', [checkJwt], ObservationController.getObser
 router.post('/', UserController.createUser)
 router.post('/new-cow', [checkJwt], [checkJwt], CowController.newCow)
 router.post('/new-observation', [checkJwt], ObservationController.newObservation)
+
+router.post('/products', [checkJwt], ProductController.newProduct);
+router.get('/products', [checkJwt], ProductController.getProducts);
+router.get('/products/:id', [checkJwt], ProductController.getProductById);
+router.put('/products/:id', [checkJwt], ProductController.updateProduct);
+router.delete('/products/:id', [checkJwt], ProductController.deleteProduct);
+
 
 router.put('/observations/:id', [checkJwt], ObservationController.updateObservation);
 router.delete('/observations/:id', [checkJwt], ObservationController.deleteObservation);

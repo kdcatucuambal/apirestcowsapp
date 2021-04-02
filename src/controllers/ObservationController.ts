@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { Observations } from "./../entity/Observations";
 import { TypesObservations } from "./../entity/TypesObservations";
 import { Cows } from "./../entity/Cows";
-import { Users } from "../entity/Users";
+
 
 export class ObservationController {
 
