@@ -1,6 +1,5 @@
-import { getRepository } from "typeorm";
+import { getRepository, ILike, Like } from "typeorm";
 import { Request, Response } from "express";
-import { Users } from "../entity/Users";
 import { Products } from ".././entity/Products";
 
 export class ProductController {
@@ -33,11 +32,23 @@ export class ProductController {
         delete productFound['items'];
 
         res.send(productFound);
-
     }
 
     static getMatchingProductsByName = async (req: Request, res: Response) => {
-
+        const userIdToken = res.locals.jwtPayload.id;
+        const { text } = req.params;
+        const finalParam = `%${text}%`;
+        const productDB = getRepository(Products);
+        let products: Products[] = null;
+        products = await productDB.find(
+            {
+                where: {
+                    productName: ILike(finalParam),
+                    user: userIdToken
+                }
+            });
+            
+        res.send(products);
     }
 
     static newProduct = async (req: Request, res: Response) => {
@@ -96,17 +107,14 @@ export class ProductController {
 
         delete productFound['user'];
         delete productFound['items'];
-
         res.json({
             "message": "Product updated successfully!",
             "response": response
         })
-
-
     }
 
     static deleteProduct = async (req: Request, res: Response) => {
-        
+
         const userIdToken = res.locals.jwtPayload.id;
         const { id } = req.params;
         const productDB = getRepository(Products);
@@ -124,7 +132,7 @@ export class ProductController {
         }
 
         const response = await productDB.delete(id);
-             
+
         res.json({
             "message": "Product deleted successfully!",
             "affected": response.affected
