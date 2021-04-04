@@ -28,7 +28,7 @@ export class Purchases {
   @Column("boolean", { name: "purchase_paid", default: () => "false" })
   purchasePaid: boolean;
 
-  @OneToMany(() => Items, (items) => items.purchase)
+  @OneToMany(() => Items, (items) => items.purchase, { cascade: true, onDelete: "CASCADE" })
   items: Items[];
 
   @ManyToOne(() => Users, (users) => users.purchases, {

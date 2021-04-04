@@ -5,6 +5,7 @@ import { ObservationController } from "./../controllers/ObservationController";
 import { ProductController } from "./../controllers/ProductController";
 import { TempRecordController } from "./../controllers/TempRecordController";
 import { checkJwt } from "./../middlewares/jwt";
+import { PurchaseController } from '../controllers/PurchaseController';
 const router = Router();
 
 //USERS ROUTES
@@ -39,5 +40,16 @@ router.get('/temp-records/:id', [checkJwt], TempRecordController.getTempRecorByI
 router.post('/temp-records', [checkJwt], TempRecordController.newTempRecord);
 router.put('/temp-records/:id', [checkJwt], TempRecordController.updateTempRecord);
 router.delete('/temp-records/:id', [checkJwt], TempRecordController.deleteTempRecord);
+
+//PURCHASES ROUTES
+router.get("/purchases", [checkJwt], PurchaseController.getPurchases);
+router.get("/purchases-by-payment-status/:status", [checkJwt], PurchaseController.getPurchaseByPaymentStatus);
+router.get("/purchases/:id", [checkJwt], PurchaseController.getPurchaseById);
+router.post("/purchases", [checkJwt], PurchaseController.newPurchase);
+router.put("/purchases/:id", [checkJwt], PurchaseController.updatePurchase);
+router.patch('/purchases/:id', [checkJwt], PurchaseController.updatePaidPurchase);
+router.delete('/purchases/:id', [checkJwt], PurchaseController.deletePurchase);
+router.patch('/purchases/:id', [checkJwt], PurchaseController.updatePaidPurchase);
+router.delete('/purchases/items/:id', [checkJwt], PurchaseController.deleteItem);
 
 export default router;
