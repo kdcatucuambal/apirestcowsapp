@@ -37,7 +37,14 @@ export class TempRecordController {
         const tempRecDB = getRepository(TempRecord);
         // const fromT = '2020-01-01';
         // const toT = '2020-01-10';
-        const recordsFound = await tempRecDB.find({ where: { tempRecordDate: Between(from, to), user: userIdToken }, order: { tempRecordDate: "DESC" } });
+        const recordsFound = await tempRecDB.find({
+            where:
+            {
+                tempRecordDate: Between(from, to),
+                user: userIdToken
+            },
+            order: { tempRecordDate: "DESC" }
+        });
         res.send(recordsFound);
 
     }
@@ -52,7 +59,7 @@ export class TempRecordController {
                 user: userIdToken
             }
         });
-        
+
         if (recordsFound.length !== 0) {
             return res.status(404).json({ message: "Error date" });
         }

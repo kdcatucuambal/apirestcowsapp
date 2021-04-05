@@ -6,6 +6,7 @@ import { ProductController } from "./../controllers/ProductController";
 import { TempRecordController } from "./../controllers/TempRecordController";
 import { checkJwt } from "./../middlewares/jwt";
 import { PurchaseController } from '../controllers/PurchaseController';
+import { PaymentController } from '../controllers/PaymentController';
 const router = Router();
 
 //USERS ROUTES
@@ -51,5 +52,10 @@ router.patch('/purchases/:id', [checkJwt], PurchaseController.updatePaidPurchase
 router.delete('/purchases/:id', [checkJwt], PurchaseController.deletePurchase);
 router.patch('/purchases/:id', [checkJwt], PurchaseController.updatePaidPurchase);
 router.delete('/purchases/items/:id', [checkJwt], PurchaseController.deleteItem);
+
+//PAYMENTS
+router.get('/payments', [checkJwt], PaymentController.getPayments);
+router.get('/payments/:id', [checkJwt], PaymentController.getPaymentById);
+router.post('/payments', [checkJwt], PaymentController.newPayment);
 
 export default router;

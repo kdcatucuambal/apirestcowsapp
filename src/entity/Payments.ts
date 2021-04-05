@@ -41,6 +41,6 @@ export class Payments {
   @JoinColumn([{ name: "user_id", referencedColumnName: "userId" }])
   user: Users;
 
-  @OneToMany(() => Records, (records) => records.payment)
+  @OneToMany(() => Records, (records) => records.payment, { cascade: true })
   records: Records[];
 }
