@@ -1,12 +1,11 @@
 {
    "type": "postgres",
-   "host": "localhost",
-   "port": 5432,
-   "username": "postgres",
-   "password": "kevin",
-   "database": "cowsdb",
+   "url": "postgres://ooceszpyejotoz:28043e0f3607be8531fd0c99fa1cad0b500410c0da45967ae80d122e0521b27d@ec2-18-204-101-137.compute-1.amazonaws.com:5432/da5ce4j4fv6nik",
    "synchronize": false,
    "logging": false,
+   "ssl": {
+      "rejectUnauthorized": false
+   },
    "entities": [
       "src/entity/**/*.ts"
    ],
