@@ -11,7 +11,15 @@ export class PaymentController {
         const userTokenId = res.locals.jwtPayload.id;
         const paymentDB = getRepository(Payments);
 
-        const payments = await paymentDB.find({ where: { user: userTokenId } });
+        const payments = await paymentDB.find({ where: { user: userTokenId }, order: { paymentDate: "DESC" } });
+        res.send(payments);
+    }
+
+    static getPaymentsForChart = async (req: Request, res: Response) => {
+        const userTokenId = res.locals.jwtPayload.id;
+        const paymentDB = getRepository(Payments);
+
+        const payments = await paymentDB.find({ where: { user: userTokenId }, order: { paymentDate: "DESC" }, take: 12 });
         res.send(payments);
     }
 
@@ -26,14 +34,14 @@ export class PaymentController {
         } catch (error) {
             return res.status(404).json({ message: "There are no data", error });
         }
-
         res.send(paymentFound);
-
     }
 
     static newPayment = async (req: Request, res: Response) => {
         const userTokenId = res.locals.jwtPayload.id;
-        const { date, toDate, fromDate, literValue, totalLiters, paymentTotal } = req.body;
+        const { paymentDate, paymentToDate,
+            paymentFromDate, paymentLiterValue,
+            paymentTotalLiters, paymentTotal } = req.body;
         const paymentDB = getRepository(Payments);
         const tempRecDB = getRepository(TempRecord);
         const userDB = getRepository(Users);
@@ -43,11 +51,13 @@ export class PaymentController {
         const recordsFound = await tempRecDB.find({
             where:
             {
-                tempRecordDate: Between(fromDate, toDate),
+                tempRecordDate: Between(paymentFromDate, paymentToDate),
                 user: userTokenId
             },
             order: { tempRecordDate: "DESC" }
         });
+
+
 
         const recordsCreated: Records[] = [];
         for (const record of recordsFound) {
@@ -59,11 +69,11 @@ export class PaymentController {
             recordsCreated.push(newRecord);
         }
         payment.records = recordsCreated;
-        payment.paymentDate = date;
-        payment.paymentFromDate = fromDate;
-        payment.paymentToDate = toDate;
-        payment.paymentLiterValue = literValue;
-        payment.paymentTotalLiters = totalLiters;
+        payment.paymentDate = paymentDate;
+        payment.paymentFromDate = paymentFromDate;
+        payment.paymentToDate = paymentToDate;
+        payment.paymentLiterValue = paymentLiterValue;
+        payment.paymentTotalLiters = paymentTotalLiters;
         payment.paymentTotal = paymentTotal;
         payment.user = await userDB.findOne(userTokenId);
 
@@ -75,14 +85,43 @@ export class PaymentController {
             return res.status(406).json({ message: "Something goes wrong", response: error });
         }
 
-        const responseDeleted = await tempRecDB.delete({ tempRecordDate: Between(fromDate, toDate) });
+        const responseDeleted = await tempRecDB.delete({ tempRecordDate: Between(paymentFromDate, paymentToDate), user: userTokenId });
 
         res.json({
             "message": "Payment created successfully!",
-            "response": response,
+            "response_id": response.paymentId,
             "tempRecords": responseDeleted
         });
 
+    }
+
+
+    static deletePaymentById = async (req: Request, res: Response) => {
+        const userTokenId = res.locals.jwtPayload.id;
+        const { id } = req.params;
+        const paymentDB = getRepository(Payments);
+        const recordsDB = getRepository(Records);
+        let paymentFound: Payments = null;
+        try {
+            paymentFound = await paymentDB.findOneOrFail(id,
+                { where: { user: userTokenId }, loadRelationIds: true });
+        } catch (error) {
+            return res.status(404).json({ message: "There are no data", error });
+        }
+
+        const records: number[] = <number[]><unknown>paymentFound.records;
+        let affected = 0;
+        if (records.length > 0) {
+            const r = await recordsDB.delete(records);
+            affected = r.affected;
+        }
+
+
+        const response = await paymentDB.delete(id);
+        res.json({
+            "message": "Payment deleted successfully!",
+            "affected": response.affected + affected
+        });
     }
 
 

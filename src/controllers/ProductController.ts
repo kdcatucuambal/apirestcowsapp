@@ -21,11 +21,11 @@ export class ProductController {
         try {
             productFound = await productDB.findOneOrFail(id, { loadRelationIds: true });
         } catch (error) {
-            return res.status(404).json({ message: "There are no data", products: [] });
+            return res.status(404).json({ message: "There are no data", error });
         }
 
         if (userIdToken !== productFound.user) {
-            return res.status(404).json({ message: "There are no data", products: [] });
+            return res.status(404).json({ message: "There are no data permission", });
         }
 
         delete productFound['user'];
@@ -33,7 +33,7 @@ export class ProductController {
 
         res.send(productFound);
     }
-
+    
     static getMatchingProductsByName = async (req: Request, res: Response) => {
         const userIdToken = res.locals.jwtPayload.id;
         const { text } = req.params;
@@ -47,7 +47,6 @@ export class ProductController {
                     user: userIdToken
                 }
             });
-            
         res.send(products);
     }
 

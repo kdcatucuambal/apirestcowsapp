@@ -59,10 +59,41 @@ export class ObservationController {
     }
 
 
+    static getObservationById = async (req: Request, res: Response) => {
+        const userIdToken = res.locals.jwtPayload.id;
+        const { id } = req.params;
+        const observationBD = getRepository(Observations);
+
+        let obsFound: Observations = null;
+
+        try {
+            obsFound = await observationBD.findOneOrFail(id, { relations: ['cow', 'cow.user', 'type'] });
+        } catch (error) {
+            return res.status(404).json({ message: "There are no data", error: error });
+        }
+
+        if (obsFound.cow.user.userId !== userIdToken) {
+            return res.status(400).json({
+                message: "There are no data",
+                response: "You do not have permission for this element"
+            });
+        }
+
+        delete obsFound.cow["user"]
+        delete obsFound.cow["cowBirthDate"]
+        delete obsFound.cow["cowBuyDate"]
+        delete obsFound.cow["cowDescription"]
+        delete obsFound.cow["cowImage"]
+        delete obsFound.cow["cowPrice"]
+        delete obsFound.cow["cowRace"]
+
+        res.send(obsFound);
+
+    }
+
     static newObservation = async (req: Request, res: Response) => {
         const userIdToken = res.locals.jwtPayload.id;
-        const { type, cow, description, price } = req.body;
-
+        const { type, cow, observationDescription, observationPrice, observationDate } = req.body;
         const observationBD = getRepository(Observations);
         const typeObsBD = getRepository(TypesObservations);
         const cowBD = getRepository(Cows);
@@ -94,9 +125,9 @@ export class ObservationController {
 
         observation.cow = cowFound;
         observation.type = typeFound;
-        observation.observationDate = new Date().toDateString();
-        observation.observationDescription = description;
-        observation.observationPrice = price;
+        observation.observationDate = observationDate;
+        observation.observationDescription = observationDescription;
+        observation.observationPrice = observationPrice;
 
         let response = null;
         try {
@@ -117,7 +148,7 @@ export class ObservationController {
 
     static updateObservation = async (req: Request, res: Response) => {
         const userIdToken = res.locals.jwtPayload.id;
-        const { type, description, price, updateDate } = req.body;
+        const { type, observationDescription, observationPrice, observationDate } = req.body;
         //Observation ID
         const { id } = req.params;
 
@@ -145,13 +176,12 @@ export class ObservationController {
         } catch (error) {
             return res.status(404).json({ message: "There are no data", response: error });
         }
-        obsFound.observationDescription = description;
-        obsFound.observationPrice = price;
-        obsFound.type = typeFound;
 
-        if (updateDate) {
-            obsFound.observationDate = new Date().toDateString();
-        }
+        obsFound.observationDescription = observationDescription;
+        obsFound.observationPrice = observationPrice;
+        obsFound.type = typeFound;
+        obsFound.observationDate = observationDate;
+
 
         let response = null;
 
@@ -191,9 +221,9 @@ export class ObservationController {
             });
         }
 
-    
+
         const response = await observationBD.delete(id);
-       
+
         res.json({
             "message": "Observation deleted successfully!",
             "affected": response.affected

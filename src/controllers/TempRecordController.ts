@@ -31,12 +31,19 @@ export class TempRecordController {
         res.send(recordFound);
     }
 
+
+    static getTempRecordsLimit = async (req: Request, res: Response) => {
+        const userIdToken = res.locals.jwtPayload.id;
+        const tempRecDB = getRepository(TempRecord);
+        const records = await tempRecDB.find({ where: { user: userIdToken }, order: { tempRecordDate: "DESC" }, take: 7 });
+        res.send(records);
+    }
+
+
     static getTempRecordsByDates = async (req: Request, res: Response) => {
         const userIdToken = res.locals.jwtPayload.id;
         const { from, to } = req.params;
         const tempRecDB = getRepository(TempRecord);
-        // const fromT = '2020-01-01';
-        // const toT = '2020-01-10';
         const recordsFound = await tempRecDB.find({
             where:
             {
@@ -51,11 +58,12 @@ export class TempRecordController {
 
     static newTempRecord = async (req: Request, res: Response) => {
         const userIdToken = res.locals.jwtPayload.id;
-        const { morning, afternoon, description, date } = req.body;
+        const { tempRecordMorning, tempRecordAfternoon, tempRecordDescription, tempRecordDate } = req.body;
         const tempRecDB = getRepository(TempRecord);
+
         const recordsFound: TempRecord[] = await tempRecDB.find({
             where: {
-                tempRecordDate: date,
+                tempRecordDate: tempRecordDate,
                 user: userIdToken
             }
         });
@@ -66,10 +74,10 @@ export class TempRecordController {
 
         const record = new TempRecord();
         record.user = userIdToken;
-        record.tempRecordMorning = morning;
-        record.tempRecordAfternoon = afternoon;
-        record.tempRecordDescription = description;
-        record.tempRecordDate = date;
+        record.tempRecordMorning = tempRecordMorning;
+        record.tempRecordAfternoon = tempRecordAfternoon;
+        record.tempRecordDescription = tempRecordDescription;
+        record.tempRecordDate = tempRecordDate;
 
         let response = null;
 
@@ -87,7 +95,7 @@ export class TempRecordController {
 
     static updateTempRecord = async (req: Request, res: Response) => {
         const userIdToken = res.locals.jwtPayload.id;
-        const { morning, afternoon, description } = req.body;
+        const { tempRecordMorning, tempRecordAfternoon, tempRecordDescription } = req.body;
         const { id } = req.params;
         const tempRecDB = getRepository(TempRecord);
         let recordFound: TempRecord = null;
@@ -99,9 +107,9 @@ export class TempRecordController {
         if (userIdToken !== recordFound.user) {
             return res.status(404).json({ message: "There are no permission" });
         }
-        recordFound.tempRecordMorning = morning;
-        recordFound.tempRecordAfternoon = afternoon;
-        recordFound.tempRecordDescription = description;
+        recordFound.tempRecordMorning = tempRecordMorning;
+        recordFound.tempRecordAfternoon = tempRecordAfternoon;
+        recordFound.tempRecordDescription = tempRecordDescription;
         let response = null;
         try {
             response = await tempRecDB.save(recordFound);
