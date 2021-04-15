@@ -5,4 +5,3 @@ build/
 tmp/
 temp/
 test/
-docker/node/
