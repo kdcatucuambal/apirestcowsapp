@@ -5,7 +5,7 @@
   "username": "vvcastwznjqrnp",
   "password": "ecbaf97f4de8e89af6906c48260c05ba7b05162ba2af42d324c18f070f6119da",
   "database": "d8h4ihfe1jhmbh",
-  "synchronize": true,
+  "synchronize": false,
   "logging": false,
   "ssl": {
     "rejectUnauthorized": false
