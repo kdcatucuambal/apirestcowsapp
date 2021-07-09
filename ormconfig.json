@@ -1,24 +1,21 @@
 {
-   "type": "postgres",
-   "host": "localhost",
-   "port": 5432,
-   "username": "postgres",
-   "password": "kevin",
-   "database": "cowsdb",
-   "synchronize": false,
-   "logging": false,
-   "entities": [
-      "src/entity/**/*.ts"
-   ],
-   "migrations": [
-      "src/migration/**/*.ts"
-   ],
-   "subscribers": [
-      "src/subscriber/**/*.ts"
-   ],
-   "cli": {
-      "entitiesDir": "src/entity",
-      "migrationsDir": "src/migration",
-      "subscribersDir": "src/subscriber"
-   }
+  "type": "postgres",
+  "host": "ec2-54-157-100-65.compute-1.amazonaws.com",
+  "port": 5432,
+  "username": "vvcastwznjqrnp",
+  "password": "ecbaf97f4de8e89af6906c48260c05ba7b05162ba2af42d324c18f070f6119da",
+  "database": "d8h4ihfe1jhmbh",
+  "synchronize": true,
+  "logging": false,
+  "ssl": {
+    "rejectUnauthorized": false
+  },
+  "entities": ["src/entity/**/*.ts"],
+  "migrations": ["src/migration/**/*.ts"],
+  "subscribers": ["src/subscriber/**/*.ts"],
+  "cli": {
+    "entitiesDir": "src/entity",
+    "migrationsDir": "src/migration",
+    "subscribersDir": "src/subscriber"
+  }
 }
